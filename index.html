@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yaş Hesaplama</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      text-align: center;
+    }
+    .input-container {
+      margin: 20px 0;
+    }
+    input {
+      padding: 10px;
+      margin: 5px;
+      width: 60px;
+      text-align: center;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Yaş Hesaplama</h1>
+<div class="input-container">
+  <input type="number" id="day" placeholder="Gün" min="1" max="31">
+  <input type="number" id="month" placeholder="Ay" min="1" max="12">
+  <input type="number" id="year" placeholder="Yıl" min="1900" max="2100">
+</div>
+<button onclick="calculateAge()">Yaş Hesapla</button>
+<div class="result" id="result"></div>
+
+<script>
+  function calculateAge() {
+    // Kullanıcıdan tarih bilgilerini al
+    const birthDay = parseInt(document.getElementById("day").value);
+    const birthMonth = parseInt(document.getElementById("month").value);
+    const birthYear = parseInt(document.getElementById("year").value);
+
+    if (isNaN(birthDay) || isNaN(birthMonth) || isNaN(birthYear)) {
+      document.getElementById("result").innerText = "Lütfen geçerli bir tarih girin!";
+      return;
+    }
+
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1; // Aylar 0-11 olduğu için +1
+    const currentDay = today.getDate();
+
+    // Yaşı hesapla
+    let ageYears = currentYear - birthYear;
+    let ageMonths = currentMonth - birthMonth;
+    let ageDays = currentDay - birthDay;
+
+    if (ageDays < 0) {
+      ageMonths -= 1;
+      ageDays += new Date(currentYear, currentMonth - 1, 0).getDate(); // Önceki ayın gün sayısı
+    }
+
+    if (ageMonths < 0) {
+      ageYears -= 1;
+      ageMonths += 12;
+    }
+
+    // Bir sonraki yaşa kaç gün kaldığını hesapla
+    const nextBirthday = new Date(currentYear, birthMonth - 1, birthDay);
+    if (nextBirthday < today) {
+      nextBirthday.setFullYear(currentYear + 1);
+    }
+    const daysToNextBirthday = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+
+    // Sonucu ekrana yazdır
+    document.getElementById("result").innerText = 
+      `Siz ${ageYears} yıl ${ageMonths} ay ${ageDays} gün yaşındasınız.\n` +
+      `${daysToNextBirthday} gün sonra ${ageYears + 1}. yaşınıza geçeceksiniz.`;
+  }
+</script>
+
+</body>
+</html>
