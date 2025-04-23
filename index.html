@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,8 +16,11 @@
     input {
       padding: 10px;
       margin: 5px;
-      width: 60px;
+      width: 100px;
       text-align: center;
+    }
+    #month {
+      width: 120px;
     }
     button {
       padding: 10px 20px;
@@ -28,6 +31,7 @@
       margin-top: 20px;
       font-size: 18px;
       color: #333;
+      white-space: pre-line;
     }
   </style>
 </head>
@@ -36,27 +40,52 @@
 <h1>Yaş Hesaplama</h1>
 <div class="input-container">
   <input type="number" id="day" placeholder="Gün" min="1" max="31">
-  <input type="number" id="month" placeholder="Ay" min="1" max="12">
+  <input type="text" id="month" placeholder="Ay (Sayı veya İsim)">
   <input type="number" id="year" placeholder="Yıl" min="1900" max="2100">
 </div>
 <button onclick="calculateAge()">Yaş Hesapla</button>
 <div class="result" id="result"></div>
 
 <script>
+  const months = {
+    'ocak': 1, 'şubat': 2, 'mart': 3, 'nisan': 4, 'mayıs': 5, 'haziran': 6,
+    'temmuz': 7, 'ağustos': 8, 'eylül': 9, 'ekim': 10, 'kasım': 11, 'aralık': 12,
+    'january': 1, 'february': 2, 'march': 3, 'april': 4, 'may': 5, 'june': 6,
+    'july': 7, 'august': 8, 'september': 9, 'october': 10, 'november': 11, 'december': 12
+  };
+
+  function parseMonth(monthInput) {
+    // Sayı olarak girilmişse
+    const monthNumber = parseInt(monthInput);
+    if (!isNaN(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
+      return monthNumber;
+    }
+    
+    // Yazı olarak girilmişse
+    const monthLower = monthInput.toLowerCase().trim();
+    if (months.hasOwnProperty(monthLower)) {
+      return months[monthLower];
+    }
+    
+    return NaN; // Geçersiz giriş
+  }
+
   function calculateAge() {
     // Kullanıcıdan tarih bilgilerini al
     const birthDay = parseInt(document.getElementById("day").value);
-    const birthMonth = parseInt(document.getElementById("month").value);
+    const monthInput = document.getElementById("month").value;
     const birthYear = parseInt(document.getElementById("year").value);
+    
+    const birthMonth = parseMonth(monthInput);
 
     if (isNaN(birthDay) || isNaN(birthMonth) || isNaN(birthYear)) {
-      document.getElementById("result").innerText = "Lütfen geçerli bir tarih girin!";
+      document.getElementById("result").innerText = "Lütfen geçerli bir tarih girin!\nÖrnek: 15 Kasım 1990 veya 15 11 1990";
       return;
     }
 
     const today = new Date();
     const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth() + 1; // Aylar 0-11 olduğu için +1
+    const currentMonth = today.getMonth() + 1;
     const currentDay = today.getDate();
 
     // Yaşı hesapla
@@ -66,7 +95,7 @@
 
     if (ageDays < 0) {
       ageMonths -= 1;
-      ageDays += new Date(currentYear, currentMonth - 1, 0).getDate(); // Önceki ayın gün sayısı
+      ageDays += new Date(currentYear, currentMonth - 1, 0).getDate();
     }
 
     if (ageMonths < 0) {
@@ -81,9 +110,17 @@
     }
     const daysToNextBirthday = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
 
+    // Ay ismini bul
+    const monthNames = [
+      "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+      "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+    ];
+    const monthName = monthNames[birthMonth - 1];
+
     // Sonucu ekrana yazdır
     document.getElementById("result").innerText = 
-      `Siz ${ageYears} yıl ${ageMonths} ay ${ageDays} gün yaşındasınız.\n` +
+      `Doğum Tarihiniz: ${birthDay} ${monthName} ${birthYear}\n` +
+      `Yaşınız: ${ageYears} yıl ${ageMonths} ay ${ageDays} gün\n` +
       `${daysToNextBirthday} gün sonra ${ageYears + 1}. yaşınıza geçeceksiniz.`;
   }
 </script>
