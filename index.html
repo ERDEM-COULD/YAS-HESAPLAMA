@@ -5,46 +5,165 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yaş Hesaplama</title>
   <style>
+    :root {
+      --primary: #6e45e2;
+      --secondary: #88d3ce;
+      --dark: #2a2a72;
+      --light: #f8f9fa;
+      --success: #4cc9f0;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      text-align: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: var(--light);
     }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      animation: fadeIn 0.8s ease-out;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      background: linear-gradient(to right, #fff, #c9d6ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
     .input-container {
-      margin: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      gap: 10px;
     }
+    
     input {
-      padding: 10px;
-      margin: 5px;
-      width: 100px;
+      flex: 1;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--light);
+      font-size: 1rem;
       text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+    
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
     #month {
-      width: 120px;
+      flex: 1.5;
     }
+    
     button {
-      padding: 10px 20px;
-      font-size: 16px;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(to right, var(--primary), var(--dark));
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
       cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(110, 69, 226, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
+    
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(110, 69, 226, 0.6);
+    }
+    
+    button:active {
+      transform: translateY(1px);
+    }
+    
     .result {
-      margin-top: 20px;
-      font-size: 18px;
-      color: #333;
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-size: 1.1rem;
+      line-height: 1.6;
       white-space: pre-line;
+      border-left: 3px solid var(--success);
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+      .input-container {
+        flex-direction: column;
+      }
+      
+      input, #month {
+        width: 100%;
+      }
+      
+      .container {
+        padding: 30px 20px;
+      }
     }
   </style>
 </head>
 <body>
 
-<h1>Yaş Hesaplama</h1>
-<div class="input-container">
-  <input type="number" id="day" placeholder="Gün" min="1" max="31">
-  <input type="text" id="month" placeholder="Ay (Sayı veya İsim)">
-  <input type="number" id="year" placeholder="Yıl" min="1900" max="2100">
+<div class="container">
+  <h1>🌟 Yaş Hesaplama 🌟</h1>
+  <div class="input-container">
+    <input type="number" id="day" placeholder="Gün" min="1" max="31">
+    <input type="text" id="month" placeholder="Ay (Sayı veya Ay İsmi)">
+    <input type="number" id="year" placeholder="Yıl" min="1900" max="2100">
+  </div>
+  <button onclick="calculateAge()">HESAPLA</button>
+  <div class="result" id="result"></div>
 </div>
-<button onclick="calculateAge()">Yaş Hesapla</button>
-<div class="result" id="result"></div>
 
 <script>
   const months = {
@@ -55,23 +174,16 @@
   };
 
   function parseMonth(monthInput) {
-    // Sayı olarak girilmişse
     const monthNumber = parseInt(monthInput);
-    if (!isNaN(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
-      return monthNumber;
+    if (!isNaN(monthNumber) {
+      return monthNumber >= 1 && monthNumber <= 12 ? monthNumber : NaN;
     }
     
-    // Yazı olarak girilmişse
     const monthLower = monthInput.toLowerCase().trim();
-    if (months.hasOwnProperty(monthLower)) {
-      return months[monthLower];
-    }
-    
-    return NaN; // Geçersiz giriş
+    return months[monthLower] || NaN;
   }
 
   function calculateAge() {
-    // Kullanıcıdan tarih bilgilerini al
     const birthDay = parseInt(document.getElementById("day").value);
     const monthInput = document.getElementById("month").value;
     const birthYear = parseInt(document.getElementById("year").value);
@@ -79,7 +191,7 @@
     const birthMonth = parseMonth(monthInput);
 
     if (isNaN(birthDay) || isNaN(birthMonth) || isNaN(birthYear)) {
-      document.getElementById("result").innerText = "Lütfen geçerli bir tarih girin!\nÖrnek: 15 Kasım 1990 veya 15 11 1990";
+      document.getElementById("result").innerText = "❌ Lütfen geçerli bir tarih girin!\n\nÖrnekler:\n15 Kasım 1990\n15 11 1990\n15 November 1990";
       return;
     }
 
@@ -88,7 +200,6 @@
     const currentMonth = today.getMonth() + 1;
     const currentDay = today.getDate();
 
-    // Yaşı hesapla
     let ageYears = currentYear - birthYear;
     let ageMonths = currentMonth - birthMonth;
     let ageDays = currentDay - birthDay;
@@ -103,25 +214,22 @@
       ageMonths += 12;
     }
 
-    // Bir sonraki yaşa kaç gün kaldığını hesapla
     const nextBirthday = new Date(currentYear, birthMonth - 1, birthDay);
     if (nextBirthday < today) {
       nextBirthday.setFullYear(currentYear + 1);
     }
     const daysToNextBirthday = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
 
-    // Ay ismini bul
     const monthNames = [
       "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
       "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
     ];
     const monthName = monthNames[birthMonth - 1];
 
-    // Sonucu ekrana yazdır
-    document.getElementById("result").innerText = 
-      `Doğum Tarihiniz: ${birthDay} ${monthName} ${birthYear}\n` +
-      `Yaşınız: ${ageYears} yıl ${ageMonths} ay ${ageDays} gün\n` +
-      `${daysToNextBirthday} gün sonra ${ageYears + 1}. yaşınıza geçeceksiniz.`;
+    document.getElementById("result").innerHTML = 
+      `🎂 <strong>Doğum Tarihiniz:</strong> ${birthDay} ${monthName} ${birthYear}\n\n` +
+      `🎉 <strong>Yaşınız:</strong> ${ageYears} yıl ${ageMonths} ay ${ageDays} gün\n\n` +
+      `⏳ <strong>${daysToNextBirthday} gün</strong> sonra ${ageYears + 1}. yaşınıza geçeceksiniz.`;
   }
 </script>
 
